@@ -82,5 +82,5 @@ module.exports = function(grunt) {
     grunt.registerTask('build', 'Builds files for production', ['concat:build', 'uglify:build']);
 
     // Travis CI task
-    grunt.registerTask('travis', 'Travis CI task', ['karma:travis', 'coveralls']);
+    grunt.registerTask('travis', 'Travis CI task', ['karma:travis']);
 };
