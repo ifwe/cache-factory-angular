@@ -1,5 +1,9 @@
 /*jshint expr: true*/
-define(['src/tagged-cache-factory', 'angular/mocks'], function() {
+define(function(require) {
+    var sinon = require('sinon');
+    require('src/tagged-cache-factory');
+    require('angular/mocks');
+
     describe('Module: tagged.services.cache-factory', function() {
         beforeEach(module('tagged.services.cache-factory'));
 

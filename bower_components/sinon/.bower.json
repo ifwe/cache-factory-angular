@@ -1,0 +1,12 @@
+{
+  "name": "sinon",
+  "homepage": "https://github.com/ifwe/Sinon.JS",
+  "_release": "cf54076650",
+  "_resolution": {
+    "type": "commit",
+    "commit": "cf54076650619ea60fbb5591dd4cbab3971d8d57"
+  },
+  "_source": "git@github.com:ifwe/Sinon.JS.git",
+  "_target": "cf54076650619ea60fbb5591dd4cbab3971d8d57",
+  "_originalSource": "git@github.com:ifwe/Sinon.JS.git"
+}

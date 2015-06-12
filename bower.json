@@ -1,26 +1,27 @@
 {
-    "name": "tagged-cache-factory",
-    "version": "1.0.0",
-    "authors": [
-        "Hector Virgen <hvirgen@ifwe.com>"
-    ],
-    "description": "LRU Cache with expiration support for AngularJS",
-    "main": "tagged-cache-factory.js",
-    "keywords": [
-        "Angular",
-        "Services",
-        "Cache",
-        "LRU Cache",
-        "Expiration Cache"
-    ],
-    "license": "MIT",
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components"
-    ],
-    "dependencies": {
-        "angular": "~1.2.3",
-        "angular-mocks": "~1.2.3"
-    }
+  "name": "tagged-cache-factory",
+  "version": "1.0.0",
+  "authors": [
+    "Hector Virgen <hvirgen@ifwe.com>"
+  ],
+  "description": "LRU Cache with expiration support for AngularJS",
+  "main": "tagged-cache-factory.js",
+  "keywords": [
+    "Angular",
+    "Services",
+    "Cache",
+    "LRU Cache",
+    "Expiration Cache"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "angular": "~1.2.3",
+    "angular-mocks": "~1.2.3",
+    "sinon": "git@github.com:ifwe/Sinon.JS.git#cf54076650619ea60fbb5591dd4cbab3971d8d57"
+  }
 }

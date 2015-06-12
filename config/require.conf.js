@@ -8,7 +8,8 @@ requirejs.config({
     baseUrl: '/base',
     paths: {
         'angular': 'bower_components/angular/angular',
-        'angular/mocks': 'bower_components/angular-mocks/angular-mocks'
+        'angular/mocks': 'bower_components/angular-mocks/angular-mocks',
+        'sinon': 'bower_components/sinon/sinon'
     },
     shim: {
         'angular': {
