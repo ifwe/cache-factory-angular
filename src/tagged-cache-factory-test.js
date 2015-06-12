@@ -83,7 +83,7 @@ define(['src/tagged-cache-factory', 'angular/mocks'], function() {
                 });
             });
 
-            it('removes least recently used entry before if none have expired', function() {
+            it('removes least recently used entry if none have expired', function() {
                 this.cache.put('a', 1); // no expiration
                 this.cache.put('b', 2); // no expiration
                 this.cache.put('c', 3, 100); // newest entry, but expires soon
@@ -98,7 +98,7 @@ define(['src/tagged-cache-factory', 'angular/mocks'], function() {
                 expect(this.cache.get('d')).to.equal(4); // still good
             });
 
-            it('removes expired entry before removing least recently used entry', function() {
+            it('removes expired entries before removing least recently used entry', function() {
                 this.cache.put('a', 1); // no expiration
                 this.cache.put('b', 2); // no expiration
                 this.cache.put('c', 3, 100); // newest entry, but expires soon
