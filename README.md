@@ -107,7 +107,7 @@ app.service('myBlogService', ['taggedCacheFactory', 'mySlowApi', function(tagged
     });
   };
 });
-
+```
 
 ## Getting Started
 
