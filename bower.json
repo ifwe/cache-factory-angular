@@ -4,7 +4,7 @@
   "authors": [
     "Hector Virgen <hvirgen@ifwe.com>"
   ],
-  "description": "LRU Cache with expiration support for AngularJS",
+  "description": "Drop-in replacement for Angular's $cacheFactory with support for expiration and tagging.",
   "main": "tagged-cache-factory.js",
   "keywords": [
     "Angular",
