@@ -4,7 +4,11 @@
 
 # LRU Cache with expiration support
 
-A drop-in replacement for Angular's `$cacheFactory`, the `taggedCacheFactory` factory provides expiration support. When the cache is full, items that have expired will be prioritized for removal before falling back to removing the least-recently-used item.
+A drop-in replacement for Angular's `$cacheFactory`, the `taggedCacheFactory` factory provides support cache expiration and tagging.
+
+## Expiration
+
+When the cache is full, items that have expired will be prioritized for removal before falling back to removing the least-recently-used item. This helps ensure that often-used cache entries will eventually be removed to prevent from showing stale content indefinitely.
 
 ## Usage
 
@@ -45,7 +49,65 @@ app.service('myService', ['taggedCacheFactory', 'mySlowApi', function(taggedCach
 }]);
 ```
 
-In the `myService` above, the cache will automatically expire the "other" things before falling back to purging the least recently used item. This also allows you to ensure that users don't see stale content for too long.
+## Tagging
+
+Each cache entry may optionally contain multiple tags, allowing you to group related cache entries for swift removal at a later time.
+
+## Usage
+
+```js
+var app = angular.module('MyApp', ['tagged.services.cache-factory']);
+app.service('myBlogService', ['taggedCacheFactory', 'mySlowApi', function(taggedCacheFactory, mySlowApi) {
+  var cache = taggedCacheFactory('myBlogCache', {
+    capacity: 3
+  });
+
+  this.getPost = function(id) {
+    var cacheKey = 'blog-post-' + id;
+    var cached = cache.get(cacheKey);
+    if (cached) {
+      // Cache hit, return it!
+      return cached;
+    }
+
+    var promise = mySlowApi.getBlogPost(id);
+
+    // Cache blog post promise and tag it as 'blog-{id}'
+    cache.put(cacheKey, promise, null, 'blog-' + id);
+
+    return promise;
+  };
+
+  this.getComments = function(id) {
+    var cacheKey = 'blog-comments-' + id;
+    var cached = cache.get(cacheKey);
+    if (cached) {
+      // Cache hit, return it!
+      return cached;
+    }
+
+    var promise = mySlowApi.getBlogComments(id);
+
+    // Cache blog comments promise and tag it as 'blog-{id}'
+    cache.put(cacheKey, promise, null, 'blog-' + id);
+
+    return promise;
+  };
+
+  this.deletePost = function(id) {
+    // Make API call to delete the post
+    return mySlowApi.deleteBlogPost(id)
+    .then(function(result) {
+      // Delete all cache entries for this post with just one call!
+      // In this example, the cache for the post as well as the comments will be removed.
+      cache.removeMatchingTag('blog-' + id);
+    })
+    .catch(function(error) {
+      // Oops, something went wrong!
+    });
+  };
+});
+
 
 ## Getting Started
 

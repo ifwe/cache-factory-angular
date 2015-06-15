@@ -11,8 +11,9 @@
 
     var module = angular.module('tagged.services.cache-factory', []);
 
-    module.factory('taggedCacheFactory', ['$cacheFactory', function($cacheFactory) {
+    module.factory('taggedCacheFactory', function() {
         var TaggedCache = function(cacheId, options) {
+            this._cacheId = cacheId;
             this._cache = {};
             this._head = null;
             this._tail = null;
@@ -36,17 +37,21 @@
                 }
             }
 
-            // TODO: Update LRU linked list
             moveToHead.call(this, entry);
 
             return entry.value;
         };
 
-        TaggedCache.prototype.put = function(cacheKey, value, ttl) {
+        TaggedCache.prototype.put = function(cacheKey, value, ttl, tags) {
+            if (!angular.isArray(tags)) {
+                tags = angular.isString(tags) ? [tags] : [];
+            }
+
             var entry = {
                 key: cacheKey,
                 value: value,
-                expiration: false
+                expiration: false,
+                tags: tags
             };
 
             ttl = parseInt(ttl, 10);
@@ -59,7 +64,8 @@
 
             this._cache[cacheKey] = entry;
 
-            if (this._options.capacity > 0 && Object.keys(this._cache).length > this._options.capacity) {
+            var size = Object.keys(this._cache).length;
+            if (this._options.capacity > 0 && size > this._options.capacity) {
                 clearExpired.call(this);
 
                 if (Object.keys(this._cache).length > this._options.capacity) {
@@ -114,6 +120,24 @@
 
         TaggedCache.prototype.remove = function(cacheKey) {
             if (this._cache.hasOwnProperty(cacheKey)) {
+                var entry = this._cache[cacheKey];
+
+                // Update the doubly-linked list pointers
+                var previous = entry.previous;
+                var next = entry.next;
+
+                if (previous) {
+                    previous.next = next;
+                }
+
+                if (next) {
+                    next.previous = previous;
+                }
+
+                if (this._tail === entry) {
+                    this._tail = previous;
+                }
+
                 delete this._cache[cacheKey];
             }
         };
@@ -124,14 +148,40 @@
             this._tail = null;
         };
 
+        TaggedCache.prototype.removeMatchingTag = function(tag) {
+            // TODO: Use a faster lookup, perhaps a map?
+            var _this = this;
+            angular.forEach(this._cache, function(entry, cacheKey) {
+                if (-1 !== entry.tags.indexOf(tag)) {
+                    _this.remove(cacheKey);
+                }
+            });
+        };
+
+        TaggedCache.prototype.destroy = function() {
+            this.removeAll();
+            delete caches[this._cacheId];
+        };
+
+        var caches = {};
+
         var factory = function(cacheId, options) {
-            return new TaggedCache(cacheId, options);
+            if (caches.hasOwnProperty(cacheId)) {
+                throw "A cache by the ID '" + cacheId + "' already exists."
+            }
+            var cache = new TaggedCache(cacheId, options);
+            caches[cacheId] = cache;
+            return cache;
+        };
+
+        factory.get = function(cacheId) {
+            return caches[cacheId];
         };
 
         factory.TaggedCache = TaggedCache;
 
         return factory;
-    }]);
+    });
 
     return module;
 }));

@@ -33,7 +33,8 @@ module.exports = function(grunt) {
                 // Use defaults
             },
             dev: {
-                singleRun: false
+                singleRun: false,
+                browsers: ['PhantomJS']
             },
             bdd: {
                 reporters: ['story', 'coverage']

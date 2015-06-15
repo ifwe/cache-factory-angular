@@ -1,6 +1,7 @@
 /*jshint expr: true*/
 define(function(require) {
     var sinon = require('sinon');
+    var angular = require('angular');
     require('src/tagged-cache-factory');
     require('angular/mocks');
 
@@ -45,6 +46,24 @@ define(function(require) {
                 this.cache.removeAll();
                 expect(this.cache.get('test_key_1')).to.be.undefined;
                 expect(this.cache.get('test_key_2')).to.be.undefined;
+            });
+
+            it('throws exception if cache id already exists', function() {
+                var _this = this;
+                expect(function() {
+                    var cache = _this.cacheFactory('my_cache');
+                }).to.throw();
+            });
+
+            it('can get caches by id', function() {
+                expect(this.cacheFactory.get('my_cache')).to.equal(this.cache);
+                expect(this.cacheFactory.get('unknown_cache')).to.be.undefined;
+            });
+
+            it('can self destroy', function() {
+                this.cache.destroy();
+                var cache = this.cacheFactory.get('my_cache');
+                expect(cache).to.be.undefined;
             });
         });
 
@@ -115,6 +134,53 @@ define(function(require) {
                 expect(this.cache.get('b')).to.equal(2); // still good
                 expect(this.cache.get('c')).to.be.undefined; // removed because it expired
                 expect(this.cache.get('d')).to.equal(4); // still good
+            });
+
+            [
+                [ 'tail', 'a', { a: undefined, b: undefined, c: 3, d: 4, e: 5} ],
+                [ 'head', 'c', { a: undefined, b: 2, c: undefined, d: 4, e: 5} ],
+                [ 'middle', 'b', { a: undefined, b: undefined, c: 3, d: 4, e: 5} ]
+            ].forEach(function(data) {
+                var entryPosition = data[0];
+                var cacheKeyToRemove = data[1];
+                var expectedCache = data[2];
+                it('does not break LRU when ' + entryPosition + ' is removed manually', function() {
+                    var _this = this;
+                    // First fill up the cache up to the limit
+                    this.cache.put('a', 1);
+                    this.cache.put('b', 2);
+                    this.cache.put('c', 3);
+
+                    // Remove the specified item from the data provider
+                    this.cache.remove(cacheKeyToRemove);
+
+                    // Add two more items to force the LRU item to be purged
+                    this.cache.put('d', 4);
+                    this.cache.put('e', 5);
+
+                    // Assert the cache contains all the expected items
+                    angular.forEach(expectedCache, function(value, key) {
+                        expect(_this.cache.get(key)).to.equal(value);
+                    });
+                });
+            });
+        });
+
+        describe('tags', function() {
+            beforeEach(function() {
+                this.cache = this.cacheFactory('my_cache', {
+                    capacity: 10
+                });
+            });
+
+            it('can be removed by tag name', function() {
+                this.cache.put('a', 1, null, 'foo'); // single tag
+                this.cache.put('b', 2, null, ['foo', 'bar']); // multiple tags
+                this.cache.put('c', 3, null, 'bar');
+                this.cache.removeMatchingTag('foo');
+                expect(this.cache.get('a')).to.be.undefined;
+                expect(this.cache.get('b')).to.be.undefined;
+                expect(this.cache.get('c')).to.equal(3);
             });
         });
     });
