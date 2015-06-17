@@ -94,7 +94,6 @@
 
         var purgeTail = function() {
             if (this._head === this._tail) {
-                console.log('nothing to do, head === tail');
                 // Do not purge
                 return;
             }
