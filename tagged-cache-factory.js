@@ -1,4 +1,4 @@
-/*! tagged-cache-factory - v1.0.0 - 2015-06-15 */
+/*! tagged-cache-factory - v1.0.1 - 2015-06-17 */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
@@ -95,7 +95,6 @@
 
         var purgeTail = function() {
             if (this._head === this._tail) {
-                console.log('nothing to do, head === tail');
                 // Do not purge
                 return;
             }
